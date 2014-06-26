@@ -92,7 +92,7 @@ do_start()
 	do_exec login --password_path="$PASSWORD_PATH" $EMAIL "$SYNC_DIR"
 	check_exec "login failed"
 	# 1.1.13.22 - leep to avoid the error "Command failed: System.InvalidOperationException: This method requires a connection."
-	sleep 1
+	do_wait
 	add_exclusions
 	log_end_msg 0
 }
@@ -104,6 +104,21 @@ check_start()
         fi
 }
 
+get_state()
+{
+	do_exec status | grep 'State:' | cut -d \  -f 2
+}
+
+do_wait()
+{
+	tmp=$(get_state)
+	while [ $tmp = "Idle" ]; do
+		echo "waiting... ($tmp)"
+		sleep 1
+		tmp=$(get_state)
+	done
+	echo "ok ($tmp)"
+}
 
 do_stop()
 {
@@ -140,8 +155,20 @@ syncstatus)
 	do_exec status
 	check_exec "failed to retrieve the status"
 	;;
+state)
+	check_start
+	get_state
+	;;
+exclude)
+	check_start
+	do_exec exclude $2
+	;;
+list)
+        check_start
+        do_exec exclude list
+        ;;
   *)
-	echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status|syncstatus}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status|syncstatus|state|exclude|list}" >&2
 	exit 3
 	;;
 esac
