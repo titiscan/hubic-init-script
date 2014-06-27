@@ -165,8 +165,20 @@ list)
         check_start
         do_exec exclude list
         ;;
+synchronize)
+        check_start
+        do_exec synchronize
+        ;;
+pause)
+        check_start
+        do_exec pause        
+        ;;
+resume)
+        check_start
+        do_exec resume        
+;;
   *)
-	echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status|syncstatus|state|exclude|list}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status|syncstatus|state|exclude|list|synchronize|pause|resume}" >&2
 	exit 3
 	;;
 esac
